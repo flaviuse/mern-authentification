@@ -5,13 +5,13 @@ import { Provider } from "react-redux";
 import { ConnectedRouter } from "connected-react-router";
 
 import App from "./App";
-import configureStore from "./store/configureStore";
+import configuredStore from "./store/configureStore";
 import registerServiceWorker from "./registerServiceWorker";
 
 import "./index.css";
 
 const history = createBrowserHistory();
-const store = configureStore(history);
+const store = configuredStore(history);
 
 ReactDOM.render(
   <Provider store={store}>

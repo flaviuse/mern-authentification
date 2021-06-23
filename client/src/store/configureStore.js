@@ -1,23 +1,20 @@
-import { createStore, applyMiddleware, compose } from "redux";
 import { createLogger } from "redux-logger";
 import { routerMiddleware } from "connected-react-router";
+import { configureStore } from "@reduxjs/toolkit";
 
-import thunk from "redux-thunk";
 import CreateRootReducer from "./reducers/index";
 
-export default function configureStore(history, initialState = {}) {
-  const composeEnhancers =
-    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-  const middlewares = [routerMiddleware(history), thunk];
-
-  if (process.env.NODE_ENV !== "production") {
-    const logger = createLogger({ collapsed: true, diff: true });
-    middlewares.push(logger);
-  }
-
-  return createStore(
-    CreateRootReducer(history),
+export default function configuredStore(history, initialState = {}) {
+  return configureStore({
+    reducer: CreateRootReducer(history),
+    devTools: process.env.NODE_ENV !== "production",
+    middlewares: (getDefaultMiddleware) => {
+      if (process.env.NODE_ENV !== "production") {
+        const logger = createLogger({ collapsed: true, diff: true });
+        return getDefaultMiddleware().concat([routerMiddleware(history), logger]);
+      }
+      return getDefaultMiddleware().concat([routerMiddleware(history)]);
+    },
     initialState,
-    composeEnhancers(applyMiddleware(...middlewares))
-  );
+  });
 }
